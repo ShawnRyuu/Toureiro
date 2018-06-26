@@ -8,8 +8,8 @@ var isEqual = require('lodash/isEqual');
 var Pagination = require('./pagination.jsx');
 
 var isJsonObject = function(value) {
-  if (value == undefined) return true;
-  if (typeof value === "string" && value.length === 0) return true;
+  if (value == undefined) return false;
+  if (typeof value === "string" && value.length === 0) return false;
 
   var parsed;
   try {
@@ -218,14 +218,41 @@ var AddJob = React.createClass({
     }, true);
   },
 
-  submit: function() {
-    var data = this.state.data;
+  submitEx: function() {
+    if(this.props.queue.indexOf("rally") === -1)
+      submit(this.state.data);
+
+    console.log(`>>>>>> [Toureiro] this.props.queue = ${this.props.queue}`);
+
+    if(isJsonObject(this.state.data)) {
+      let data = JSON.parse(this.state.data);
+      if (data.story) {
+        if (!Array.isArray(data.story)) {
+          submit(this.state.data);
+        } else {
+
+          console.log('>>>>>> [Toureiro] rally array data --->');
+          console.log(data);
+
+          data.story.forEach((val) => {
+            submit(`{\"story\": ${val}}`);
+          });
+        }
+      }
+    }
+  },
+
+  submit: function(jobData) {
+    var data = jobData; //this.state.data;
     var _this = this;
     if (data === undefined || data.length === 0) {
-      data = {};
+      // data = {};
+      console.log('Missing Job data!');
+      return;
     } else {
       data = JSON.parse(data);
     }
+
     $.ajax({
         url: "queue/" + _this.props.queue + "/new",
         type: "POST",
@@ -258,7 +285,7 @@ var AddJob = React.createClass({
   render: function() {
     return (
       <div className="toureiro-jobs">
-        <h4 className="header">New {_this.props.queue} Job ...</h4>
+        <h4 className="header">New Job...</h4>
         <div className="container-fluid">
           <div className="row job-top-buffer">
             <div ref="delayMillis" className="form-group col-xs-3">
@@ -290,7 +317,7 @@ var AddJob = React.createClass({
           <div className="row job-top-buffer">
             <div className="col-xs-12">
               { this.state.newJobId ? (<label className="col-xs-3">Created a new job with id: {this.state.newJobId}</label>) : '' }
-              <button disabled={!this.isReadyToSubmit()} onClick={this.submit} className={"btn btn-success col-xs-3 " + (this.state.newJobId ? "col-xs-offset-6" : "col-xs-offset-9")}>Create</button>
+              <button disabled={!this.isReadyToSubmit()} onClick={this.submitEx} className={"btn btn-success col-xs-3 " + (this.state.newJobId ? "col-xs-offset-6" : "col-xs-offset-9")}>Create</button>
             </div>
           </div>
         </div>
