@@ -486,6 +486,7 @@ var ToureiroJobs = React.createClass({
       <div className="toureiro-jobs">
         <h4 className="header">{this.props.category[0].toUpperCase() + this.props.category.slice(1)} Jobs</h4>
         <button className="btn btn-primary" onClick={this.handleFlush} style={{marginLeft: "20px"}}>Flush {this.props.category} jobs</button>
+        <Pagination ref="pagination" total={Math.ceil(this.state.total / this.state.limit)} onPageChange={this.handlePageChange} />
         <div ref="jobs">
           {
             this.state.jobs.map(function(job) {
