@@ -258,7 +258,7 @@ var AddJob = React.createClass({
   render: function() {
     return (
       <div className="toureiro-jobs">
-        <h4 className="header">New Job</h4>
+        <h4 className="header">New {_this.props.queue} Job ...</h4>
         <div className="container-fluid">
           <div className="row job-top-buffer">
             <div ref="delayMillis" className="form-group col-xs-3">
